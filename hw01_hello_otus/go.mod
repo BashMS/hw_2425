@@ -1,4 +1,4 @@
-module github.com/BashMS/hw01_hello_otus
+module github.com/BashMS/hw_2425/hw01_hello_otus
 
 go 1.22
 
