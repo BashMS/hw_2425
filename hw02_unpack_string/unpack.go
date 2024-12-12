@@ -14,7 +14,8 @@ var ErrInvalidString = errors.New("invalid string")
 func RtTrim(sb *strings.Builder) error {
 	trimStr := sb.String()
 	sb.Reset()
-	_, err := sb.WriteString(string([]rune(trimStr)[0 : len([]rune(trimStr))-1]))
+	rnStr := []rune(trimStr)
+	_, err := sb.WriteString(string(rnStr[0 : len(rnStr)-1]))
 	if err != nil {
 		return fmt.Errorf("%w WriteString", err)
 	}
@@ -33,10 +34,11 @@ func Unpack(str string) (string, error) {
 		res    strings.Builder
 		prevRn rune
 	)
-	for i, item := range str {
+	firstItem := true
+	for _, item := range str {
 		// Если начали с цифры тогда сразу ошибка
 		switch {
-		case unicode.IsDigit(item) && i == 0:
+		case unicode.IsDigit(item) && firstItem:
 			return "", ErrInvalidString
 		case unicode.IsDigit(item) && unicode.IsDigit(prevRn):
 			return "", ErrInvalidString
@@ -70,6 +72,7 @@ func Unpack(str string) (string, error) {
 			prevRn = item
 			res.WriteRune(item)
 		}
+		firstItem = false
 	}
 
 	return res.String(), nil
