@@ -38,7 +38,7 @@ func Unpack(str string) (string, error) {
 	for _, item := range str {
 		// Если начали с цифры тогда сразу ошибка
 		switch {
-		case unicode.IsDigit(item) && firstItem:
+		case firstItem && unicode.IsDigit(item):
 			return "", ErrInvalidString
 		case unicode.IsDigit(item) && unicode.IsDigit(prevRn):
 			return "", ErrInvalidString
