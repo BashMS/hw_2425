@@ -34,7 +34,7 @@ func Unpack(str string) (string, error) {
 		res    strings.Builder
 		prevRn rune
 	)
-	
+
 	// Если начали с цифры тогда сразу ошибка
 	if unicode.IsDigit([]rune(str)[0]) {
 		return "", ErrInvalidString
