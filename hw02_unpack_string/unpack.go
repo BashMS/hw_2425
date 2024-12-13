@@ -34,12 +34,13 @@ func Unpack(str string) (string, error) {
 		res    strings.Builder
 		prevRn rune
 	)
-	firstItem := true
+	
+	// Если начали с цифры тогда сразу ошибка
+	if unicode.IsDigit([]rune(str)[0]) {
+		return "", ErrInvalidString
+	}
 	for _, item := range str {
-		// Если начали с цифры тогда сразу ошибка
 		switch {
-		case firstItem && unicode.IsDigit(item):
-			return "", ErrInvalidString
 		case unicode.IsDigit(item) && unicode.IsDigit(prevRn):
 			return "", ErrInvalidString
 		case unicode.IsDigit(item):
@@ -72,7 +73,6 @@ func Unpack(str string) (string, error) {
 			prevRn = item
 			res.WriteRune(item)
 		}
-		firstItem = false
 	}
 
 	return res.String(), nil
