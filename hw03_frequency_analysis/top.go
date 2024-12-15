@@ -39,6 +39,7 @@ func Top10(inText string) []string {
 	sort.Slice(listFreq, func(i, j int) bool {
 		return listFreq[i].value > listFreq[j].value
 	})
+
 	// Заберем первые 10 слов
 	prepResult := make(map[int][]string)
 	for i = 0; i < 10; i++ {
@@ -56,6 +57,7 @@ func Top10(inText string) []string {
 		listFreq[i].fields = value
 		i++
 	}
+
 	// Итоговая сортировка
 	sort.Slice(listFreq, func(i, j int) bool {
 		return listFreq[i].value > listFreq[j].value
