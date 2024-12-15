@@ -40,21 +40,17 @@ func Top10(inText string) []string {
 		return listFreq[i].value > listFreq[j].value
 	})
 
-	// Заберем первые 10 слов
-	maxRes := 10
-	// Если меньше 10 слов
-	if len(listFreq) < 10 {
-		maxRes = len(listFreq)
-	}
+	// Сгруппируем слова по частоте вхождения
 	prepResult := make(map[int][]string)
-	for i = 0; i < maxRes; i++ {
-		idx := listFreq[i].value
+	for _, item := range listFreq {
+		idx := item.value
 		if strs, ok := prepResult[idx]; ok {
-			prepResult[idx] = append(strs, listFreq[i].field)
+			prepResult[idx] = append(strs, item.field)
 		} else {
-			prepResult[idx] = []string{listFreq[i].field}
+			prepResult[idx] = []string{item.field}
 		}
 	}
+
 	listFreq = make([]wordFrequency, len(prepResult))
 	i = 0
 	for key, value := range prepResult {
@@ -67,10 +63,23 @@ func Top10(inText string) []string {
 	sort.Slice(listFreq, func(i, j int) bool {
 		return listFreq[i].value > listFreq[j].value
 	})
+
+	// В ответ отберем первые 10 наиболее часто встречаемых
 	var result []string
+	stopAnalysis := false
 	for _, value := range listFreq {
 		sort.Strings(value.fields)
-		result = append(result, value.fields...)
+		for _, word := range value.fields {
+			if len(result) < 10 {
+				result = append(result, word)
+			} else {
+				stopAnalysis = true
+				break
+			}
+		}
+		if stopAnalysis {
+			break
+		}
 	}
 	return result
 }
