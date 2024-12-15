@@ -41,8 +41,13 @@ func Top10(inText string) []string {
 	})
 
 	// Заберем первые 10 слов
+	maxRes := 10
+	// Если меньше 10 слов
+	if len(listFreq) < 10 {
+		maxRes = len(listFreq)
+	}
 	prepResult := make(map[int][]string)
-	for i = 0; i < 10; i++ {
+	for i = 0; i < maxRes; i++ {
 		idx := listFreq[i].value
 		if strs, ok := prepResult[idx]; ok {
 			prepResult[idx] = append(strs, listFreq[i].field)
