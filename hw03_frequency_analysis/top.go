@@ -18,13 +18,9 @@ func Top10(inText string) []string {
 	// Разобьем текст на слова
 	allFields := strings.Fields(inText)
 	// Слова по частоте вхождения
-	listCnt := make(map[string]int, len(allFields))
+	listCnt := make(map[string]int)
 	for _, field := range allFields {
-		if cnt, ok := listCnt[field]; ok {
-			listCnt[field] = cnt + 1
-		} else {
-			listCnt[field] = 1
-		}
+		listCnt[field]++
 	}
 
 	//  Перегоним в структуру для сортировки
@@ -37,7 +33,10 @@ func Top10(inText string) []string {
 	}
 	// Отсортируем
 	sort.Slice(listFreq, func(i, j int) bool {
-		return listFreq[i].value > listFreq[j].value
+		if listFreq[i].value != listFreq[j].value {
+			return listFreq[i].value > listFreq[j].value
+		}
+		return listFreq[i].field < listFreq[j].field
 	})
 
 	// Сгруппируем слова по частоте вхождения
@@ -68,7 +67,6 @@ func Top10(inText string) []string {
 	var result []string
 	stopAnalysis := false
 	for _, value := range listFreq {
-		sort.Strings(value.fields)
 		for _, word := range value.fields {
 			if len(result) < 10 {
 				result = append(result, word)
