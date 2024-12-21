@@ -29,7 +29,6 @@ func (l *lruCache) Set(key Key, value interface{}) bool {
 		item.Value = tempCacheItem
 		l.queue.MoveToFront(item)
 		isExist = true
-		return isExist
 	} else {
 		item := l.queue.PushFront(tempCacheItem)
 		l.items[key] = item
@@ -39,8 +38,8 @@ func (l *lruCache) Set(key Key, value interface{}) bool {
 			delete(l.items, lastItem.Value.(cacheItem).key)
 		}
 		isExist = false
-		return isExist
 	}
+	return isExist
 }
 
 func (l *lruCache) Get(key Key) (interface{}, bool) {
