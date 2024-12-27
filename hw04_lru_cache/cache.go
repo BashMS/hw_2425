@@ -24,22 +24,25 @@ func (l *lruCache) Set(key Key, value interface{}) bool {
 		key:   key,
 		value: value,
 	}
-	var isExist bool
+
+	// Если ключ найден, тогда заменим значение
 	if item, ok := l.items[key]; ok {
 		item.Value = tempCacheItem
 		l.queue.MoveToFront(item)
-		isExist = true
-	} else {
-		item := l.queue.PushFront(tempCacheItem)
-		l.items[key] = item
-		if l.queue.Len() > l.capacity {
-			lastItem := l.queue.Back()
-			l.queue.Remove(lastItem)
-			delete(l.items, lastItem.Value.(cacheItem).key)
-		}
-		isExist = false
+		return true
 	}
-	return isExist
+
+	// Если кэш заполнен, удалим последнее значение
+	if l.queue.Len() == l.capacity {
+		lastItem := l.queue.Back()
+		l.queue.Remove(lastItem)
+		delete(l.items, lastItem.Value.(cacheItem).key)
+	}
+	// Добавим новое значение
+	item := l.queue.PushFront(tempCacheItem)
+	l.items[key] = item
+
+	return false
 }
 
 func (l *lruCache) Get(key Key) (interface{}, bool) {
