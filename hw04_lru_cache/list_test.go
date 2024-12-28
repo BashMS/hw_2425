@@ -19,7 +19,6 @@ func TestList(t *testing.T) {
 		l := NewList()
 
 		l.PushFront(10) // [10]
-
 		require.Equal(t, 1, l.Len())
 		first := l.Front() // 10
 		l.Remove(first)

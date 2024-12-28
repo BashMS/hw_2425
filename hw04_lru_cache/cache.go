@@ -46,14 +46,11 @@ func (l *lruCache) Set(key Key, value interface{}) bool {
 }
 
 func (l *lruCache) Get(key Key) (interface{}, bool) {
-	var isExist bool
 	if item, ok := l.items[key]; ok {
 		l.queue.MoveToFront(item)
-		isExist = true
-		return l.queue.Front().Value.(cacheItem).value, isExist
+		return l.queue.Front().Value.(cacheItem).value, true
 	}
-	isExist = false
-	return nil, isExist
+	return nil, false
 }
 
 func (l *lruCache) Clear() {

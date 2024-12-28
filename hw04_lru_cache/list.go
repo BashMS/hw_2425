@@ -82,6 +82,10 @@ func (l *list) Remove(i *ListItem) {
 			l.head.Prev = nil
 		}
 		l.size--
+		// Если удалили последний элемент, тогда зачистим ссылку
+		if l.size == 0 {
+			l.tail = nil
+		}
 		return
 	}
 	if i == l.tail {
