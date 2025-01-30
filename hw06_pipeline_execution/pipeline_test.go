@@ -16,6 +16,24 @@ const (
 
 var isFullTesting = true
 
+// 1-й кейс отрабатывает
+//func ExecutePipeline(in In, done In, stages ...Stage) Out {
+//	result := make(Out)
+//	result = stages[0](in)
+//	for i, stg := range stages {
+//		select {
+//		case <-done:
+//			return nil
+//		default:
+//			if i > 0 {
+//				result = stg(result)
+//			}
+//		}
+//	}
+//
+//	return result
+//}
+
 func TestPipeline(t *testing.T) {
 	// Stage generator
 	g := func(_ string, f func(v interface{}) interface{}) Stage {
