@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"io"
 	"os"
-	//nolint:depguard
 
-	"github.com/cheggaaa/pb/v3"
+	"github.com/cheggaaa/pb/v3" //nolint:depguard
 )
 
 var (
