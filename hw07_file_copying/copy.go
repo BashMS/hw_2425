@@ -65,6 +65,11 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 	}
 	defer fileDst.Close()
 
+	// Если смещение и лимит превышают размер файла
+	if limit+offset > fileStt.Size() {
+		limit = (limit + offset) - fileStt.Size()
+	}
+
 	bar := pb.Full.Start64(limit)
 	defer bar.Finish()
 
