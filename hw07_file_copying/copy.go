@@ -5,13 +5,15 @@ import (
 	"fmt"
 	"io"
 	"os"
+	//nolint:depguard
 
-	"github.com/cheggaaa/pb/v3" //nolint:depguard
+	"github.com/cheggaaa/pb/v3"
 )
 
 var (
 	ErrUnsupportedFile       = errors.New("unsupported file")
 	ErrOffsetExceedsFileSize = errors.New("offset exceeds file size")
+	ErrSpecifiedFilesMatches = errors.New("specified files matches")
 )
 
 func Copy(fromPath, toPath string, offset, limit int64) error {
@@ -20,6 +22,18 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 	if err != nil {
 		return fmt.Errorf("os.Stat: %w", err)
 	}
+
+	// Проверим файл приемник
+	fileDstStt, err := os.Stat(toPath)
+	switch {
+	case err == nil:
+		if os.SameFile(fileStt, fileDstStt) {
+			return ErrSpecifiedFilesMatches
+		}
+	case !errors.Is(err, os.ErrNotExist):
+		return fmt.Errorf("os.Stat: %w", err)
+	}
+
 	// Если указали отступ тогда проверим его валидность
 	if offset > fileStt.Size() {
 		return ErrOffsetExceedsFileSize
@@ -48,25 +62,13 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 	}
 	defer fileDst.Close()
 
-	data := make([]byte, 1)
+	bar := pb.Full.Start64(limit)
+	defer bar.Finish()
 
-	progressBar := pb.Start64(limit)
-	defer progressBar.Finish()
-	var curCnt int64
-	for {
-		_, err := fileSrc.Read(data)
-		if errors.Is(err, io.EOF) { // если конец файла
-			break // выходим из цикла
-		}
-		wb, err := fileDst.Write(data)
-		if err != nil {
-			return fmt.Errorf("fileDst.Write: %w", err)
-		}
-		curCnt += int64(wb)
-		progressBar.Add(wb)
-		if curCnt >= limit {
-			break
-		}
+	barReader := bar.NewProxyReader(fileSrc)
+	_, err = io.CopyN(fileDst, barReader, limit)
+	if err != nil && !errors.Is(err, io.EOF) { // если конец файла
+		return fmt.Errorf("io.CopyN: %w", err)
 	}
 
 	return nil

@@ -28,7 +28,17 @@ func TestCopy(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "case 02: copy ok",
+			name: "case 02: matches in out files",
+			args: args{
+				fromPath: "testdata/input.txt",
+				toPath:   "testdata/input.txt",
+				offset:   10000,
+				limit:    0,
+			},
+			wantErr: true,
+		},
+		{
+			name: "case 03: copy ok",
 			args: args{
 				fromPath: "testdata/input.txt",
 				toPath:   "testdata/out.txt",
@@ -43,7 +53,7 @@ func TestCopy(t *testing.T) {
 			if err := Copy(tt.args.fromPath, tt.args.toPath, tt.args.offset, tt.args.limit); (err != nil) != tt.wantErr {
 				t.Errorf("Copy() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			os.Remove(tt.args.toPath)
+			os.Remove("testdata/out.txt")
 		})
 	}
 }
