@@ -79,6 +79,10 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 	barReader := bar.NewProxyReader(fileSrc)
 	_, err = io.CopyN(fileDst, barReader, limit)
 	if err != nil && !errors.Is(err, io.EOF) { // если конец файла
+		errD := os.Remove(toPath)
+		if errD != nil {
+			return fmt.Errorf("io.CopyN: %w; os.Remove: %w ", err, errD)
+		}
 		return fmt.Errorf("io.CopyN: %w", err)
 	}
 
