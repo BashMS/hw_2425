@@ -15,42 +15,15 @@ var (
 	ErrSpecifiedFilesMatches = errors.New("specified files matches")
 )
 
-func checkSrcFile(fromPath string) error {
-	fileStt, err := os.Stat(fromPath)
-	if err != nil {
-		return fmt.Errorf("os.Stat: %w", err)
-	}
-
-	// проверим размер и возможность чтения
-	if fileStt.Size() == 0 {
-		file, err := os.Open(fromPath)
-		if err != nil {
-			return fmt.Errorf("os.Open: %w", err)
-		}
-		defer file.Close()
-		buf := make([]byte, 1)
-		n, err := file.Read(buf)
-		if err != nil && !errors.Is(err, io.EOF) {
-			return fmt.Errorf("file.Read: %w", err)
-		}
-		// Если что то прочитали из нулевого файла, то он какой то не такой
-		if n > 0 {
-			return ErrUnsupportedFile
-		}
-	}
-	return nil
-}
-
 func Copy(fromPath, toPath string, offset, limit int64) error {
-	err := checkSrcFile(fromPath)
-	if err != nil {
-		return fmt.Errorf("checkSrcFile: %w", err)
-	}
-
 	// Получим размер копируемого файла
 	fileStt, err := os.Stat(fromPath)
 	if err != nil {
 		return fmt.Errorf("os.Stat: %w", err)
+	}
+
+	if !fileStt.Mode().IsRegular() {
+		return ErrUnsupportedFile
 	}
 
 	// Проверим файл приемник
