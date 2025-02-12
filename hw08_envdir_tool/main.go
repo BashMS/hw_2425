@@ -44,7 +44,6 @@ func main() {
 		slog.Error("ReadDir: ", "Error", err)
 		return
 	}
-	slog.Info("Полученные переменные:", "Variables", env)
 
 	if len(args) > 2 {
 		err = checkVariables(env)
