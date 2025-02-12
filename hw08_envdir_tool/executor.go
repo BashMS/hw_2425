@@ -5,18 +5,11 @@ import (
 	"log/slog"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 // RunCmd runs a command + arguments (cmd) with environment variables from env.
 func RunCmd(cmd []string, env Environment) (returnCode int) {
-	var excStr string
-	for _, cm := range cmd {
-		excStr += fmt.Sprintf(" %s", cm)
-	}
-	excStr = strings.TrimLeft(excStr, " ")
-	slog.Info("Строка запуска", "cmd", excStr)
-	exc := exec.Command(excStr)
+	exc := exec.Command(cmd[0], cmd[1:]...) //nolint:gosec
 	envStr := make([]string, len(env))
 	i := 0
 	for k, v := range env {
