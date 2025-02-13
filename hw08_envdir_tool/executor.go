@@ -16,8 +16,6 @@ func RunCmd(cmd []string, env Environment) (returnCode int) {
 	exc := exec.Command(cmd[0], cmd[1:]...) //nolint:gosec
 	envStr := os.Environ()
 	exc.Env = envStr
-	slog.Info("Строка переменных для запуска", "envStr", envStr)
-
 	exc.Stdout = os.Stdout
 	exc.Stdin = os.Stdin
 	err = exc.Run()
