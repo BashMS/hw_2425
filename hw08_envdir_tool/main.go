@@ -6,10 +6,8 @@ import (
 )
 
 func main() {
-	slog.Info("Start...")
 	args := os.Args
 	if len(args) == 1 {
-		slog.Info("Finish.")
 		return
 	}
 	// Соберем переменные

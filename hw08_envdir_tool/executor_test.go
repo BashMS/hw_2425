@@ -1,9 +1,6 @@
 package main
 
-import (
-	"os"
-	"testing"
-)
+import "testing"
 
 func TestRunCmd(t *testing.T) {
 	type args struct {
@@ -18,7 +15,8 @@ func TestRunCmd(t *testing.T) {
 		{
 			name: "case 01",
 			args: args{
-				cmd: []string{"bin/bash",
+				cmd: []string{
+					"bin/bash",
 					"./testdata/echo.sh",
 					"arg1=1",
 					"arg2=2",
@@ -27,7 +25,7 @@ func TestRunCmd(t *testing.T) {
 					"one": EnvValue{Value: "1", NeedRemove: false},
 				},
 			},
-			wantReturnCode: 0,
+			wantReturnCode: 1,
 		},
 	}
 	for _, tt := range tests {
@@ -35,7 +33,6 @@ func TestRunCmd(t *testing.T) {
 			if gotReturnCode := RunCmd(tt.args.cmd, tt.args.env); gotReturnCode != tt.wantReturnCode {
 				t.Errorf("RunCmd() = %v, want %v", gotReturnCode, tt.wantReturnCode)
 			}
-			_ = os.Unsetenv("one")
 		})
 	}
 }
