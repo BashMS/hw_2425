@@ -16,31 +16,7 @@ type EnvValue struct {
 	NeedRemove bool
 }
 
-// checkVariables проверка и установка переменных окружения.
-func checkVariables(env Environment) error {
-	var err error
-	for k, v := range env {
-		// удалим если нужно
-		if v.NeedRemove {
-			err = os.Unsetenv(k)
-			if err != nil {
-				return fmt.Errorf("os.Unsetenv: %w", err)
-			}
-			continue
-		}
-		// иначе пересоздаем
-		err = os.Unsetenv(k)
-		if err != nil {
-			return fmt.Errorf("os.Unsetenv: %w", err)
-		}
-		err = os.Setenv(k, v.Value)
-		if err != nil {
-			return fmt.Errorf("os.Setenv: %w", err)
-		}
-	}
-	return nil
-}
-
+// getValue возвращает значение параметра из файла конфигурации.
 func getValue(filePath string) (string, error) {
 	fBody, err := os.Open(filePath)
 	if err != nil {
@@ -62,9 +38,7 @@ func getValue(filePath string) (string, error) {
 		break
 	}
 
-	result = strings.TrimRight(result, " ") // пробел
-	result = strings.TrimRight(result, "	") // таб
-
+	result = strings.TrimRight(result, " \t")
 	i := strings.Index(result, "\x00")
 	if i != -1 {
 		resultC := fmt.Sprintf("%s\n%s", result[:i], result[i+1:])
@@ -82,11 +56,15 @@ func ReadDir(dir string) (Environment, error) {
 		return nil, fmt.Errorf("os.ReadDir: %w", err)
 	}
 	// Сформируем мапу переменных окружения
-	result := make(Environment, len(files))
+	result := make(Environment, 0)
 	for _, file := range files {
 		fInfo, err := file.Info()
 		if err != nil {
 			return nil, fmt.Errorf("file.Info(): %w", err)
+		}
+		// Имя файла не должно содержать =
+		if strings.Contains(fInfo.Name(), "=") {
+			continue
 		}
 		// Если пустой тогда пометим на удаление
 		if fInfo.Size() == 0 {

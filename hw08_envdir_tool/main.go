@@ -23,5 +23,6 @@ func main() {
 		}
 		code := RunCmd(args[2:], env)
 		slog.Info("Завершили", "ReturnCode", code)
+		os.Exit(code)
 	}
 }
