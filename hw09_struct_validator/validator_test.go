@@ -42,7 +42,13 @@ func TestValidate(t *testing.T) {
 		expectedErr error
 	}{
 		{
-			// Place your code here.
+			in: App{Version: "lan"},
+			expectedErr: ValidationErrors{
+				ValidationError{
+					Field: "Version",
+					Err:   fmt.Errorf(strValidLenString, ErrValidLenString, int(5)),
+				},
+			},
 		},
 		// ...
 		// Place your code here.
@@ -53,7 +59,11 @@ func TestValidate(t *testing.T) {
 			tt := tt
 			t.Parallel()
 
-			// Place your code here.
+			if err := Validate(tt.in); err != nil {
+				if err.Error() != tt.expectedErr.Error() {
+					t.Errorf("Validate() error = %v, expectedErr %v", err, tt.expectedErr)
+				}
+			}
 			_ = tt
 		})
 	}
