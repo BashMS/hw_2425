@@ -50,8 +50,15 @@ func TestValidate(t *testing.T) {
 				},
 			},
 		},
-		// ...
-		// Place your code here.
+		{
+			in: Response{Code: 50, Body: "test"},
+			expectedErr: ValidationErrors{
+				ValidationError{
+					Field: "Code",
+					Err:   fmt.Errorf(strValidSetValue, ErrValidValue, []string{"200", "404", "500"}),
+				},
+			},
+		},
 	}
 
 	for i, tt := range tests {

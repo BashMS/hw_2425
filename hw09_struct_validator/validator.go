@@ -58,6 +58,23 @@ func validateMax(val int64, tag string) error {
 	return nil
 }
 
+func validateIn(val interface{}, tag string) error {
+	// Получим доступное множестов значений
+	tagVals := strings.Split(strings.TrimLeft(tag, "in:"), ",")
+	exists := false
+	for _, tagVal := range tagVals {
+		if val == tagVal {
+			exists = true
+			break
+		}
+	}
+	if !exists {
+		return fmt.Errorf(strValidSetValue, ErrValidValue, tagVals)
+	}
+
+	return nil
+}
+
 func validateItem(tag string, rf reflect.Value) error {
 	// разберем теги валидации
 	tags := strings.Split(tag, "|")
@@ -69,6 +86,8 @@ func validateItem(tag string, rf reflect.Value) error {
 			return validateMin(rf.Int(), tgItem)
 		case strings.Contains(tgItem, "min:"):
 			return validateMax(rf.Int(), tgItem)
+		case strings.Contains(tgItem, "in:"):
+			return validateIn(rf, tgItem)
 		}
 	}
 	return nil

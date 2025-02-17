@@ -11,8 +11,7 @@ var (
 
 var (
 	strValidLenString = "%w. Длина строки должна быть ровно %v символа"
-	ErrValidStrValue  = "%w.строка должна входить в множество строк {%v}"
-	strValidMinValue  = "%w.число не может быть меньше %v"
-	strValidMaxValue  = "%w.число не может быть больше %v"
-	ErrValidNumValue  = "%w.число должно входить в множество чисел {%v}"
+	strValidMinValue  = "%w. Число не может быть меньше %v"
+	strValidMaxValue  = "%w. Число не может быть больше %v"
+	strValidSetValue  = "%w. Значение должно входить в допустимое множество {%v}"
 )
