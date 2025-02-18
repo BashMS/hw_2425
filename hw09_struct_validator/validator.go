@@ -103,7 +103,7 @@ func validateItem(tag string, rf reflect.Value) error {
 		case strings.Contains(tgItem, "in:"):
 			return validateIn(rf.String(), strings.TrimLeft(tgItem, "in:"))
 		case strings.Contains(tgItem, "regexp:"):
-			return validateRegexp(rf.String(), strings.TrimLeft(tgItem, "regexp:"))
+			return validateRegexp(rf.String(), strings.TrimLeft(tgItem, "regxp:"))
 		}
 	}
 	return nil
@@ -130,8 +130,11 @@ func Validate(v interface{}) error {
 		if fieldValue.Kind() != reflect.Slice {
 			err := validateItem(tag, fieldValue)
 			if err != nil {
-				valResult = append(valResult, ValidationError{Field: fieldType.Name,
-					Err: err})
+				valResult = append(valResult, ValidationError{
+					Field: fieldType.Name,
+					Err:   err,
+				},
+				)
 			}
 			continue
 		}
@@ -139,8 +142,11 @@ func Validate(v interface{}) error {
 		for i := 0; i < fieldValue.Len(); i++ {
 			err := validateItem(tag, fieldValue.Index(i))
 			if err != nil {
-				valResult = append(valResult, ValidationError{Field: fieldType.Name,
-					Err: err})
+				valResult = append(valResult, ValidationError{
+					Field: fieldType.Name,
+					Err:   err,
+				},
+				)
 			}
 		}
 	}
