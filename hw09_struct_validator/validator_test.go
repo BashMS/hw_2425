@@ -59,6 +59,26 @@ func TestValidate(t *testing.T) {
 				},
 			},
 		},
+		{
+			in: User{
+				ID:     "1122334455",
+				Name:   "test",
+				Age:    20,
+				Email:  "test@test.com",
+				Role:   "admin",
+				Phones: []string{"11223344556", "1122334455"},
+			},
+			expectedErr: ValidationErrors{
+				ValidationError{
+					Field: "ID",
+					Err:   fmt.Errorf(strValidLenString, ErrValidLenString, 36),
+				},
+				ValidationError{
+					Field: "Phones",
+					Err:   fmt.Errorf(strValidLenString, ErrValidLenString, 11),
+				},
+			},
+		},
 	}
 
 	for i, tt := range tests {

@@ -3,6 +3,7 @@ package hw09structvalidator
 import (
 	"fmt"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -23,7 +24,7 @@ func (v ValidationErrors) Error() string {
 }
 
 func validateStrLen(str string, tag string) error {
-	tagVal, err := strconv.Atoi(strings.TrimLeft(tag, "len:"))
+	tagVal, err := strconv.Atoi(tag)
 	if err != nil {
 		return fmt.Errorf("strconv.Atoi: %w", err)
 	}
@@ -35,7 +36,7 @@ func validateStrLen(str string, tag string) error {
 }
 
 func validateMin(val int64, tag string) error {
-	tagVal, err := strconv.ParseInt(strings.TrimLeft(tag, "min:"), 10, 64)
+	tagVal, err := strconv.ParseInt(tag, 10, 64)
 	if err != nil {
 		return fmt.Errorf("strconv.ParseInt: %w", err)
 	}
@@ -47,7 +48,7 @@ func validateMin(val int64, tag string) error {
 }
 
 func validateMax(val int64, tag string) error {
-	tagVal, err := strconv.ParseInt(strings.TrimLeft(tag, "max:"), 10, 64)
+	tagVal, err := strconv.ParseInt(tag, 10, 64)
 	if err != nil {
 		return fmt.Errorf("strconv.ParseInt: %w", err)
 	}
@@ -58,9 +59,9 @@ func validateMax(val int64, tag string) error {
 	return nil
 }
 
-func validateIn(val interface{}, tag string) error {
+func validateIn(val string, tag string) error {
 	// Получим доступное множестов значений
-	tagVals := strings.Split(strings.TrimLeft(tag, "in:"), ",")
+	tagVals := strings.Split(tag, ",")
 	exists := false
 	for _, tagVal := range tagVals {
 		if val == tagVal {
@@ -75,19 +76,34 @@ func validateIn(val interface{}, tag string) error {
 	return nil
 }
 
+func validateRegexp(val string, tag string) error {
+	// Получим доступное множестов значений
+	re, err := regexp.Compile(tag)
+	if err != nil {
+		return fmt.Errorf("invalid regexp.Compile: %w", err)
+	}
+	if !re.MatchString(val) {
+		return fmt.Errorf(strValidEmail, ErrValidValue, val)
+	}
+
+	return nil
+}
+
 func validateItem(tag string, rf reflect.Value) error {
 	// разберем теги валидации
 	tags := strings.Split(tag, "|")
 	for _, tgItem := range tags {
 		switch {
 		case strings.Contains(tgItem, "len:"):
-			return validateStrLen(rf.String(), tgItem)
+			return validateStrLen(rf.String(), strings.TrimLeft(tgItem, "len:"))
 		case strings.Contains(tgItem, "min:"):
-			return validateMin(rf.Int(), tgItem)
-		case strings.Contains(tgItem, "min:"):
-			return validateMax(rf.Int(), tgItem)
+			return validateMin(rf.Int(), strings.TrimLeft(tgItem, "min:"))
+		case strings.Contains(tgItem, "max:"):
+			return validateMax(rf.Int(), strings.TrimLeft(tgItem, "max:"))
 		case strings.Contains(tgItem, "in:"):
-			return validateIn(rf, tgItem)
+			return validateIn(rf.String(), strings.TrimLeft(tgItem, "in:"))
+		case strings.Contains(tgItem, "regexp:"):
+			return validateRegexp(rf.String(), strings.TrimLeft(tgItem, "regexp:"))
 		}
 	}
 	return nil
