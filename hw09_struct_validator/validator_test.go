@@ -34,6 +34,10 @@ type (
 		Code int    `validate:"in:200,404,500"`
 		Body string `json:"omitempty"`
 	}
+
+	TypeTest struct {
+		Code int `validate:"regexp:^\\w+@\\w+\\.\\w+$"`
+	}
 )
 
 func TestValidate(t *testing.T) {
@@ -42,10 +46,49 @@ func TestValidate(t *testing.T) {
 		expectedErr error
 	}{
 		{
-			// Place your code here.
+			in: App{Version: "lan"},
+			expectedErr: ValidationErrors{
+				ValidationError{
+					Field: "Version",
+					Err:   fmt.Errorf(strValidLenString, ErrValidValue, int(5)),
+				},
+			},
 		},
-		// ...
-		// Place your code here.
+		{
+			in: Response{Code: 50, Body: "test"},
+			expectedErr: ValidationErrors{
+				ValidationError{
+					Field: "Code",
+					Err:   fmt.Errorf(strValidSetValue, ErrValidValue, []string{"200", "404", "500"}),
+				},
+			},
+		},
+		{
+			in: User{
+				ID:     "1122334455",
+				Name:   "test",
+				Age:    20,
+				Email:  "test@test.com",
+				Role:   "admin",
+				Phones: []string{"11223344556", "1122334455"},
+			},
+			expectedErr: ValidationErrors{
+				ValidationError{
+					Field: "ID",
+					Err:   fmt.Errorf(strValidLenString, ErrValidValue, 36),
+				},
+				ValidationError{
+					Field: "Phones",
+					Err:   fmt.Errorf(strValidLenString, ErrValidValue, 11),
+				},
+			},
+		},
+		{
+			in: TypeTest{
+				Code: 100,
+			},
+			expectedErr: fmt.Errorf(strFieldTypeNotMatchValidationType, "Code", "Regexp"),
+		},
 	}
 
 	for i, tt := range tests {
@@ -53,7 +96,11 @@ func TestValidate(t *testing.T) {
 			tt := tt
 			t.Parallel()
 
-			// Place your code here.
+			if err := Validate(tt.in); err != nil {
+				if err.Error() != tt.expectedErr.Error() {
+					t.Errorf("Validate() error = %v, expectedErr %v", err, tt.expectedErr)
+				}
+			}
 			_ = tt
 		})
 	}
