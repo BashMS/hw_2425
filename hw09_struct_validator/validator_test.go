@@ -46,7 +46,7 @@ func TestValidate(t *testing.T) {
 			expectedErr: ValidationErrors{
 				ValidationError{
 					Field: "Version",
-					Err:   fmt.Errorf(strValidLenString, ErrValidLenString, int(5)),
+					Err:   fmt.Errorf(strValidLenString, ErrValidValue, int(5)),
 				},
 			},
 		},
@@ -71,11 +71,11 @@ func TestValidate(t *testing.T) {
 			expectedErr: ValidationErrors{
 				ValidationError{
 					Field: "ID",
-					Err:   fmt.Errorf(strValidLenString, ErrValidLenString, 36),
+					Err:   fmt.Errorf(strValidLenString, ErrValidValue, 36),
 				},
 				ValidationError{
 					Field: "Phones",
-					Err:   fmt.Errorf(strValidLenString, ErrValidLenString, 11),
+					Err:   fmt.Errorf(strValidLenString, ErrValidValue, 11),
 				},
 			},
 		},

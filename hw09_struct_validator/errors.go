@@ -3,10 +3,8 @@ package hw09structvalidator
 import "errors"
 
 var (
-	ErrExpectedStruct  = errors.New("на вход ожидается структура")
-	ErrValidStrContain = errors.New("строка должна состоять из цифр")
-	ErrValidLenString  = errors.New("неверная длина строки")
-	ErrValidValue      = errors.New("неверное значение")
+	ErrExpectedStruct = errors.New("на вход ожидается структура")
+	ErrValidValue     = errors.New("ошибка валидации")
 )
 
 var (

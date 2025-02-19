@@ -1,6 +1,7 @@
 package hw09structvalidator
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"regexp"
@@ -29,7 +30,7 @@ func validateStrLen(str string, tag string) error {
 		return fmt.Errorf("strconv.Atoi: %w", err)
 	}
 	if len(str) != tagVal {
-		return fmt.Errorf(strValidLenString, ErrValidLenString, tagVal)
+		return fmt.Errorf(strValidLenString, ErrValidValue, tagVal)
 	}
 
 	return nil
@@ -129,6 +130,9 @@ func Validate(v interface{}) error {
 		// если значение не слайс тогда сразу валидируем
 		if fieldValue.Kind() != reflect.Slice {
 			err := validateItem(tag, fieldValue)
+			if err != nil && !errors.Is(err, ErrValidValue) {
+				return err
+			}
 			if err != nil {
 				valResult = append(valResult, ValidationError{
 					Field: fieldType.Name,
@@ -141,6 +145,9 @@ func Validate(v interface{}) error {
 		// слайс валидируем по значениям
 		for i := 0; i < fieldValue.Len(); i++ {
 			err := validateItem(tag, fieldValue.Index(i))
+			if err != nil && !errors.Is(err, ErrValidValue) {
+				return err
+			}
 			if err != nil {
 				valResult = append(valResult, ValidationError{
 					Field: fieldType.Name,
