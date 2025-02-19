@@ -8,9 +8,10 @@ var (
 )
 
 var (
-	strValidLenString = "%w. Длина строки должна быть ровно %v символа"
-	strValidMinValue  = "%w. Число не может быть меньше %v"
-	strValidMaxValue  = "%w. Число не может быть больше %v"
-	strValidSetValue  = "%w. Значение должно входить в допустимое множество {%v}"
-	strValidEmail     = "%w. Невалидный адрес почты %v"
+	strValidLenString                  = "%w. Длина строки должна быть ровно %v символа"
+	strValidMinValue                   = "%w. Число не может быть меньше %v"
+	strValidMaxValue                   = "%w. Число не может быть больше %v"
+	strValidSetValue                   = "%w. Значение должно входить в допустимое множество {%v}"
+	strValidEmail                      = "%w. Невалидный адрес почты %v"
+	strFieldTypeNotMatchValidationType = "тип поля %v не соотвествует типу валидации %v"
 )

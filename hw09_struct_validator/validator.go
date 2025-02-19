@@ -24,36 +24,46 @@ func (v ValidationErrors) Error() string {
 	return strings.TrimLeft(result, "; ")
 }
 
-func validateStrLen(str string, tag string) error {
+func validateStrLen(rf reflect.Value, fieldName string, tag string) error {
+	if rf.Kind() != reflect.String {
+		return fmt.Errorf(strFieldTypeNotMatchValidationType, fieldName, "Len")
+	}
+
 	tagVal, err := strconv.Atoi(tag)
 	if err != nil {
 		return fmt.Errorf("strconv.Atoi: %w", err)
 	}
-	if len(str) != tagVal {
+	if len(rf.String()) != tagVal {
 		return fmt.Errorf(strValidLenString, ErrValidValue, tagVal)
 	}
 
 	return nil
 }
 
-func validateMin(val int64, tag string) error {
+func validateMin(rf reflect.Value, fieldName string, tag string) error {
+	if rf.Kind() != reflect.Int {
+		return fmt.Errorf(strFieldTypeNotMatchValidationType, fieldName, "Min")
+	}
 	tagVal, err := strconv.ParseInt(tag, 10, 64)
 	if err != nil {
 		return fmt.Errorf("strconv.ParseInt: %w", err)
 	}
-	if val < tagVal {
+	if rf.Int() < tagVal {
 		return fmt.Errorf(strValidMinValue, ErrValidValue, tagVal)
 	}
 
 	return nil
 }
 
-func validateMax(val int64, tag string) error {
+func validateMax(rf reflect.Value, fieldName string, tag string) error {
+	if rf.Kind() != reflect.Int {
+		return fmt.Errorf(strFieldTypeNotMatchValidationType, fieldName, "Max")
+	}
 	tagVal, err := strconv.ParseInt(tag, 10, 64)
 	if err != nil {
 		return fmt.Errorf("strconv.ParseInt: %w", err)
 	}
-	if val > tagVal {
+	if rf.Int() > tagVal {
 		return fmt.Errorf(strValidMaxValue, ErrValidValue, tagVal)
 	}
 
@@ -77,34 +87,37 @@ func validateIn(val string, tag string) error {
 	return nil
 }
 
-func validateRegexp(val string, tag string) error {
+func validateRegexp(rf reflect.Value, fieldName string, tag string) error {
+	if rf.Kind() != reflect.String {
+		return fmt.Errorf(strFieldTypeNotMatchValidationType, fieldName, "Regexp")
+	}
 	// Получим доступное множестов значений
 	re, err := regexp.Compile(tag)
 	if err != nil {
 		return fmt.Errorf("invalid regexp.Compile: %w", err)
 	}
-	if !re.MatchString(val) {
-		return fmt.Errorf(strValidEmail, ErrValidValue, val)
+	if !re.MatchString(rf.String()) {
+		return fmt.Errorf(strValidEmail, ErrValidValue, rf.String())
 	}
 
 	return nil
 }
 
-func validateItem(tag string, rf reflect.Value) error {
+func validateItem(tag string, rf reflect.Value, fieldName string) error {
 	// разберем теги валидации
 	tags := strings.Split(tag, "|")
 	for _, tgItem := range tags {
 		switch {
 		case strings.Contains(tgItem, "len:"):
-			return validateStrLen(rf.String(), strings.TrimLeft(tgItem, "len:"))
+			return validateStrLen(rf, fieldName, strings.TrimLeft(tgItem, "len:"))
 		case strings.Contains(tgItem, "min:"):
-			return validateMin(rf.Int(), strings.TrimLeft(tgItem, "min:"))
+			return validateMin(rf, fieldName, strings.TrimLeft(tgItem, "min:"))
 		case strings.Contains(tgItem, "max:"):
-			return validateMax(rf.Int(), strings.TrimLeft(tgItem, "max:"))
+			return validateMax(rf, fieldName, strings.TrimLeft(tgItem, "max:"))
 		case strings.Contains(tgItem, "in:"):
 			return validateIn(rf.String(), strings.TrimLeft(tgItem, "in:"))
 		case strings.Contains(tgItem, "regexp:"):
-			return validateRegexp(rf.String(), strings.TrimLeft(tgItem, "regxp:"))
+			return validateRegexp(rf, fieldName, strings.TrimLeft(tgItem, "regxp:"))
 		}
 	}
 	return nil
@@ -129,7 +142,7 @@ func Validate(v interface{}) error {
 		}
 		// если значение не слайс тогда сразу валидируем
 		if fieldValue.Kind() != reflect.Slice {
-			err := validateItem(tag, fieldValue)
+			err := validateItem(tag, fieldValue, fieldType.Name)
 			if err != nil && !errors.Is(err, ErrValidValue) {
 				return err
 			}
@@ -144,7 +157,7 @@ func Validate(v interface{}) error {
 		}
 		// слайс валидируем по значениям
 		for i := 0; i < fieldValue.Len(); i++ {
-			err := validateItem(tag, fieldValue.Index(i))
+			err := validateItem(tag, fieldValue.Index(i), fieldType.Name)
 			if err != nil && !errors.Is(err, ErrValidValue) {
 				return err
 			}

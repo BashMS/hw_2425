@@ -34,6 +34,10 @@ type (
 		Code int    `validate:"in:200,404,500"`
 		Body string `json:"omitempty"`
 	}
+
+	TypeTest struct {
+		Code int `validate:"regexp:^\\w+@\\w+\\.\\w+$"`
+	}
 )
 
 func TestValidate(t *testing.T) {
@@ -78,6 +82,12 @@ func TestValidate(t *testing.T) {
 					Err:   fmt.Errorf(strValidLenString, ErrValidValue, 11),
 				},
 			},
+		},
+		{
+			in: TypeTest{
+				Code: 100,
+			},
+			expectedErr: fmt.Errorf(strFieldTypeNotMatchValidationType, "Code", "Regexp"),
 		},
 	}
 
