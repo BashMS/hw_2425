@@ -1,10 +1,12 @@
 package hw10programoptimization
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"regexp"
 	"strings"
+
 	"github.com/valyala/fastjson"
 )
 
@@ -31,20 +33,16 @@ func GetDomainStat(r io.Reader, domain string) (DomainStat, error) {
 type users []User
 
 func getUsers(r io.Reader) (result users, err error) {
-	content, err := io.ReadAll(r)
-	if err != nil {
-		return
-	}
-
-	lines := strings.Split(string(content), "\n")
-	result = make(users, len(lines))
-	for i, line := range lines {
+	scanner := bufio.NewScanner(r)
+	for scanner.Scan() {
 		var user User
-		user.Email = fastjson.GetString([]byte(line), "Email")
-		result[i] = user
+		user.Email = fastjson.GetString(scanner.Bytes(), "Email")
+	 	result = append(result, user)
 	}
-	
-	return
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 func countDomains(u users, domain string) (DomainStat, error) {
