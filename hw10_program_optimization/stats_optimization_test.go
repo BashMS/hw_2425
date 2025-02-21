@@ -22,9 +22,7 @@ const (
 // go test -v -count=1 -timeout=30s -tags bench .
 
 func TestGetDomainStat_Time_And_Memory(t *testing.T) {
-
 	bench := func(b *testing.B) {
-
 		b.Helper()
 
 		b.StopTimer()
@@ -50,7 +48,6 @@ func TestGetDomainStat_Time_And_Memory(t *testing.T) {
 		require.NoError(t, err)
 
 		require.Equal(t, expectedBizStat, stat)
-
 	}
 
 	result := testing.Benchmark(bench)
@@ -64,11 +61,9 @@ func TestGetDomainStat_Time_And_Memory(t *testing.T) {
 	require.Less(t, int64(result.T), int64(timeLimit), "the program is too slow")
 
 	require.Less(t, mem, memoryLimit, "the program is too greedy")
-
 }
 
 var expectedBizStat = DomainStat{
-
 	"abata.biz": 25,
 
 	"abatz.biz": 25,
