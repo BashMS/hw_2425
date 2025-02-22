@@ -38,27 +38,14 @@ func TestGetDomainStat(t *testing.T) {
 	})
 }
 
-func Test_countDomains(t *testing.T) {
-	usersData := users{
-		User{
-			Email: "aaa@mail.ru",
-		},
-		User{
-			Email: "bbb@mail.ru",
-		},
-		User{
-			Email: "ccc@mail.com",
-		},
-	}
-
-	wantResult := DomainStat{
-		"mail.ru":2,
-	}
-
-	gotResult, err := countDomains(usersData, "ru")
-
-	require.NoError(t, err)
-	require.Equal(t, wantResult, gotResult)
+func TestGetDomainStat2(t *testing.T) {
+	data := `{"Id":1,"Name":"Howard Mendoza","Username":"0Oliver","Email":"aliquid_qui_ea.Browsedrive.gov","Phone":"6-866-899-36-79","Password":"InAQJvsq","Address":"Blackbird Place 25"}
+`
+	t.Run("Email failed", func(t *testing.T) {
+		result, err := GetDomainStat(bytes.NewBufferString(data), "gov")
+		require.Error(t, err)
+		require.Equal(t, DomainStat(nil), result)
+	})
 }
 
 func BenchmarkGetDomainStat(b *testing.B) {
