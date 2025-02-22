@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"regexp"
 	"strings"
 
 	"github.com/valyala/fastjson" //nolint: depguard
@@ -45,10 +44,11 @@ func getUsers(r io.Reader) (result users, err error) {
 
 func countDomains(u users, domain string) (DomainStat, error) {
 	result := make(DomainStat)
-	rg := regexp.MustCompile("\\." + domain)
-
 	for _, user := range u {
-		matched := rg.MatchString(user.Email)
+		if !strings.Contains(user.Email, "@") {
+			return nil, fmt.Errorf("invalid email: %s", user.Email)
+		}
+		matched := strings.HasSuffix(user.Email, "."+domain)
 		if matched {
 			result[strings.ToLower(strings.SplitN(user.Email, "@", 2)[1])]++
 		}
