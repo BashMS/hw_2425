@@ -25,12 +25,13 @@ func countDomains(r io.Reader, domain string) (DomainStat, error) {
 	for scanner.Scan() {
 		var user User
 		user.Email = fastjson.GetString(scanner.Bytes(), "Email")
-		if !strings.Contains(user.Email, "@") {
+		spits := strings.SplitN(user.Email, "@", 2)
+		if len(spits) != 2 {
 			return nil, fmt.Errorf("invalid email: %s", user.Email)
 		}
 		matched := strings.HasSuffix(user.Email, "."+domain)
 		if matched {
-			result[strings.ToLower(strings.SplitN(user.Email, "@", 2)[1])]++
+			result[strings.ToLower(spits[1])]++
 		}
 	}
 
