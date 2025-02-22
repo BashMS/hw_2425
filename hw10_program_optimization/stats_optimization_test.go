@@ -859,10 +859,10 @@ var expectedBizStat = DomainStat{
 
 === RUN   TestGetDomainStat_Time_And_Memory
 
-    stats_optimization_test.go:46: time used: 262.1627ms / 300ms
+    stats_optimization_test.go:46: time used: 251.2287ms / 300ms
 
-    stats_optimization_test.go:47: memory used: 5Mb / 30Mb
+    stats_optimization_test.go:47: memory used: 3Mb / 30Mb
 
---- PASS: TestGetDomainStat_Time_And_Memory (3.97s)
+--- PASS: TestGetDomainStat_Time_And_Memory (5.34s)
 
 */
