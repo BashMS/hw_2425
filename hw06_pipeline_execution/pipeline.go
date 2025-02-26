@@ -10,6 +10,15 @@ type Stage func(in In) (out Out)
 
 func ExecutePipeline(in In, done In, stages ...Stage) Out {
 	result := make(Out)
+	go func() {
+		<-done
+		for v := range in {
+			_ = v
+		}
+		for v := range result {
+			_ = v
+		}
+	}()
 	for i, stg := range stages {
 		select {
 		case <-done:
