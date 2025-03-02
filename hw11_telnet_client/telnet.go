@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"net"
@@ -23,8 +22,6 @@ type TelnetClient interface {
 // По другому не придумал как адрес, таймаут и коннект передавть между методами.
 
 type TClient struct {
-	ctx context.Context
-
 	in *io.ReadCloser
 
 	out *io.Writer
@@ -37,15 +34,7 @@ type TClient struct {
 }
 
 func NewTelnetClient(address string, timeout time.Duration, in io.ReadCloser, out io.Writer) TelnetClient {
-	// Создаем контекст с таймаутом и отменой
-
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-
-	defer cancel()
-
 	t := TClient{
-		ctx: ctx,
-
 		in: &in,
 
 		out: &out,
@@ -60,8 +49,7 @@ func NewTelnetClient(address string, timeout time.Duration, in io.ReadCloser, ou
 
 func (t *TClient) Connect() error {
 	dialer := &net.Dialer{}
-
-	conn, err := dialer.DialContext(t.ctx, "tcp", t.address)
+	conn, err := dialer.Dial("tcp", t.address)
 	if err != nil {
 		return fmt.Errorf("dialer.DialContext: %w", err)
 	}
