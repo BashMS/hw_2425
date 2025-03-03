@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"net"
 	"time"
@@ -33,57 +32,35 @@ type TClient struct {
 	conn *net.Conn
 }
 
-func NewTelnetClient(address string, timeout time.Duration, in io.ReadCloser, out io.Writer) TelnetClient {
-	t := TClient{
-		in: &in,
-
-		out: &out,
-
-		address: address,
-
-		timeout: timeout,
-	}
-
-	return &t
-}
-
 func (t *TClient) Connect() error {
-	dialer := &net.Dialer{}
-	conn, err := dialer.Dial("tcp", t.address)
+	conn, err := net.DialTimeout("tcp", t.address, t.timeout)
 	if err != nil {
-		return fmt.Errorf("dialer.Dial: %w", err)
+		return err
 	}
-
-	defer conn.Close()
-
 	t.conn = &conn
-
 	return nil
 }
 
 func (t *TClient) Close() error {
-	err := (*t.conn).Close()
-	if err != nil {
-		return fmt.Errorf("conn.Close: %w", err)
-	}
-
-	return nil
+	return (*t.conn).Close()
 }
 
 func (t *TClient) Send() error {
 	_, err := io.Copy(*t.conn, *t.in)
-	if err != nil {
-		return fmt.Errorf("io.Copy: %w", err)
-	}
-
-	return nil
+	return err
 }
 
 func (t *TClient) Receive() error {
 	_, err := io.Copy(*t.out, *t.conn)
-	if err != nil {
-		return fmt.Errorf("io.Copy: %w", err)
-	}
+	return err
+}
 
-	return nil
+func NewTelnetClient(address string, timeout time.Duration, in io.ReadCloser, out io.Writer) TelnetClient {
+	t := TClient{
+		in:      &in,
+		out:     &out,
+		address: address,
+		timeout: timeout,
+	}
+	return &t
 }
