@@ -51,7 +51,7 @@ func (t *TClient) Connect() error {
 	dialer := &net.Dialer{}
 	conn, err := dialer.Dial("tcp", t.address)
 	if err != nil {
-		return fmt.Errorf("dialer.DialContext: %w", err)
+		return fmt.Errorf("dialer.Dial: %w", err)
 	}
 
 	defer conn.Close()

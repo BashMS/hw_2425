@@ -4,9 +4,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"net"
 	"os"
 	"os/signal"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -25,12 +25,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	address := net.JoinHostPort(args[0], args[1])
+	address := args[0]
+	if strings.HasSuffix(address, ":") {
+		address = fmt.Sprintf("%s%s", address, args[1])
+	} else {
+		address = fmt.Sprintf("%s:%s", address, args[1])
+	}
 
 	client := NewTelnetClient(address, *timeout, os.Stdin, os.Stdout)
 
 	if err := client.Connect(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, "Error connecting to server:", err)
 
 		os.Exit(1)
 	}
@@ -76,6 +81,7 @@ func readRoutine(ctx context.Context, client TelnetClient) {
 
 			err := client.Receive()
 			if err != nil {
+				fmt.Fprintln(os.Stderr, "Error Receive:", err)
 				ctx.Done()
 			}
 		}
@@ -92,6 +98,7 @@ func writeRoutine(ctx context.Context, client TelnetClient) {
 
 			err := client.Send()
 			if err != nil {
+				fmt.Fprintln(os.Stderr, "Error Send:", err)
 				ctx.Done()
 			}
 		}
