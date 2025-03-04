@@ -26,14 +26,12 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
-	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGKILL)
-	ctx, stop := context.WithTimeout(ctx, *timeout)
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT)
 
 	go readRoutine(client, cancel)
 	go writeRoutine(client, cancel)
 
 	<-ctx.Done()
-	stop()
 	cancel()
 	client.Close()
 }
