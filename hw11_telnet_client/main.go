@@ -27,12 +27,12 @@ func main() {
 	}
 
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT)
+	defer cancel()
 
 	go readRoutine(client, cancel)
 	go writeRoutine(client, cancel)
 
 	<-ctx.Done()
-	cancel()
 	client.Close()
 }
 
