@@ -15,11 +15,10 @@ const (
 	fault = sleepPerStage / 2
 )
 
-var isFullTesting = false
+var isFullTesting = true
 
 func TestPipeline(t *testing.T) {
 	// Stage generator
-
 	g := func(_ string, f func(v interface{}) interface{}) Stage {
 		return func(in In) Out {
 			out := make(Bi)
@@ -29,7 +28,6 @@ func TestPipeline(t *testing.T) {
 
 				for v := range in {
 					time.Sleep(sleepPerStage)
-
 					out <- f(v)
 				}
 			}()
@@ -50,7 +48,6 @@ func TestPipeline(t *testing.T) {
 
 	t.Run("simple case", func(t *testing.T) {
 		in := make(Bi)
-
 		data := []int{1, 2, 3, 4, 5}
 
 		go func() {
@@ -76,26 +73,19 @@ func TestPipeline(t *testing.T) {
 		require.Less(t,
 
 			int64(elapsed),
-
 			// ~0.8s for processing 5 values in 4 stages (100ms every) concurrently
-
 			int64(sleepPerStage)*int64(len(stages)+len(data)-1)+int64(fault))
 	})
 
 	t.Run("done case", func(t *testing.T) {
 		in := make(Bi)
-
 		done := make(Bi)
-
 		data := []int{1, 2, 3, 4, 5}
 
 		// Abort after 200ms
-
 		abortDur := sleepPerStage * 2
-
 		go func() {
 			<-time.After(abortDur)
-
 			close(done)
 		}()
 
@@ -176,7 +166,6 @@ func TestAllStageStop(t *testing.T) {
 
 		go func() {
 			<-time.After(abortDur)
-
 			close(done)
 		}()
 
@@ -184,7 +173,6 @@ func TestAllStageStop(t *testing.T) {
 			for _, v := range data {
 				in <- v
 			}
-
 			close(in)
 		}()
 
