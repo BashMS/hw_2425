@@ -29,12 +29,12 @@ func startStage(in In, done In, stage Stage) Out {
 		for {
 			select {
 			case <-done:
+				close(result)
 				go func() {
 					for i := range in {
 						_ = i
 					}
 				}()
-				close(result)
 				return
 			case v, ok := <-in:
 				if !ok {
