@@ -1,0 +1,21 @@
+{
+	"logger": {
+		"level": "debug",
+		"logFile": "serverApi.log"
+	},
+	"db": {
+		"host": "localHost",
+		"port": 5432,
+		"name": "calendar_pg",
+		"user": "postgres",
+		"pass": "postgres",
+        "timeout": 60,
+        "numOpenConns": 5,
+        "connLifeTime": 0
+	},
+	"server": {
+		"port": 8080,
+		"readTimeOut": 10,
+		"writeTimeOut": 10
+	}
+}
