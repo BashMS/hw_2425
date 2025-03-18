@@ -6,13 +6,20 @@ import (
 	"os"
 )
 
+const(
+   Smongo = "mongo"
+   Spostgres = "postgres"
+)
+
 // При желании конфигурацию можно вынести в internal/config.
 // Организация конфига в main принуждает нас сужать API компонентов, использовать
 // при их конструировании только необходимые параметры, а также уменьшает вероятность циклической зависимости.
 type Config struct {
+	Source string     `json:"source"`
 	Logger LoggerConf `json:"logger"`
 	DB     DBConf     `json:"db"`
 	Server ServConf   `json:"server"`
+	Mongo  MongoConf  `json:"mongo"`
 }
 
 type LoggerConf struct {
@@ -29,6 +36,14 @@ type DBConf struct {
 	Timeout int `json:"timeout"`
 	NumOpenConns int `json:"numOpenConns"`
 	ConnLifeTime int `json:"connLifeTime"`
+}
+
+type MongoConf struct {
+	User string `json:"user"`
+	Pass string `json:"pass"`
+	Host string `json:"host"`
+	Port int    `json:"port"`
+	Name string `json:"name"`
 }
 
 type ServConf struct {

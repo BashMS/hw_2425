@@ -41,7 +41,7 @@ func NewServer(logger *logger.Logger, cfg config.Config, app Application) *Serve
     if err != nil {
       logger.Error("Error create api log file", "Error:", err)
     }
-	FileLog = log.New(f, "INFO", log.Ldate|log.Ltime)
+	FileLog = log.New(f, "> ", 0)
 	
 	handler := &MyHandler{}
     mux := http.NewServeMux()
@@ -65,7 +65,7 @@ func (s *Server) Start(ctx context.Context) error {
 		WriteTimeout: s.writeTimeout,
 		}
 	s.server = server
-	s.log.Info("Server is starting... ", "port", s.Port)
+	s.log.Info("Server is starting... ", "addr", s.server.Addr)//"port", s.Port)
 	defer s.fileLog.Close()
 		
 	err := server.ListenAndServe()

@@ -14,7 +14,7 @@ import (
 	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/logger"
 	internalhttp "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/server/http"
 
-	//memorystorage "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage/memory"
+	memorystorage "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage/memory"
 	sqlstorage "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage/sql"
 )
 
@@ -46,15 +46,25 @@ func main() {
 		syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 	defer cancel()
 
-	storage := sqlstorage.New(cfg.DB, logg)
-	calendar := app.New(logg, storage)
-
-	err := storage.Open(ctx)
-	if err != nil {
-		panic(fmt.Sprintf("storage.Open: %s", err.Error()))
-		
+	var calendar *app.App
+	switch cfg.Source {
+	case config.Spostgres:
+		storage := sqlstorage.New(cfg, logg)
+		calendar = app.New(logg, storage)
+        if err := storage.Open(ctx); err != nil {
+		   panic(fmt.Sprintf("storage.Open: %s", err.Error()))
+	    }
+	    defer func() {storage.Close(ctx)}()
+	case config.Smongo:
+		storage := memorystorage.New(cfg, logg)
+		calendar = app.New(logg, storage)
+        if err := storage.Open(ctx); err != nil {
+		   panic(fmt.Sprintf("storage.Open: %s", err.Error()))
+	    }
+	    defer func() {storage.Close(ctx)}()
+	default:
+		panic("No configuration source data")	
 	}
-	defer func() {storage.Close()}()
 
 	server := internalhttp.NewServer(logg, cfg, calendar)
 

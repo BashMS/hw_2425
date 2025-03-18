@@ -20,13 +20,13 @@ type Storage struct {
 	DB *sql.DB
 }
 
-func New(cfg config.DBConf, logg *logger.Logger) *Storage {
+func New(cfg config.Config, logg *logger.Logger) *Storage {
 	return &Storage{
 		Log: *logg,
-		dsn: fmt.Sprintf("postgres://%s:%s@%s:%d/%s", cfg.User, cfg.Pass, cfg.Host, cfg.Port, cfg.Name),
-		timeOut: time.Duration(time.Duration(cfg.Timeout) * time.Second),
-		numOpenConns: cfg.NumOpenConns,
-		connLifeTime: time.Duration(time.Duration(cfg.ConnLifeTime) * time.Second),
+		dsn: fmt.Sprintf("postgres://%s:%s@%s:%d/%s", cfg.DB.User, cfg.DB.Pass, cfg.DB.Host, cfg.DB.Port, cfg.DB.Name),
+		timeOut: time.Duration(time.Duration(cfg.DB.Timeout) * time.Second),
+		numOpenConns: cfg.DB.NumOpenConns,
+		connLifeTime: time.Duration(time.Duration(cfg.DB.ConnLifeTime) * time.Second),
 	}
 }
 
@@ -57,7 +57,7 @@ func (s *Storage) Open(ctx context.Context) error {
 	return nil
 }
 
-func (s *Storage) Close() error {
+func (s *Storage) Close(ctx context.Context) error {
 	s.Log.Info("Closing DB...")
 	if s.DB == nil {
 		return nil
