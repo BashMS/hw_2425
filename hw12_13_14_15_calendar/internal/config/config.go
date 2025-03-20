@@ -6,11 +6,6 @@ import (
 	"os"
 )
 
-const(
-   Smongo = "mongo"
-   Spostgres = "postgres"
-)
-
 // При желании конфигурацию можно вынести в internal/config.
 // Организация конфига в main принуждает нас сужать API компонентов, использовать
 // при их конструировании только необходимые параметры, а также уменьшает вероятность циклической зависимости.
@@ -46,13 +41,13 @@ func NewConfig(cfgPath string) Config {
 	var data []byte
 	data, err := os.ReadFile(cfgPath)
 	if err != nil {
-		panic(fmt.Sprintf("Error read config file: %s", err.Error()))
+		panic(fmt.Sprintf("error read config file: %s", err.Error()))
 	}
 
     var cfg Config
 	err = json.Unmarshal(data, &cfg)
 	if err != nil {
-		panic(fmt.Sprintf("Error get configs: %s", err.Error()))
+		panic(fmt.Sprintf("error get configs: %s", err.Error()))
 	}
 
 	return cfg

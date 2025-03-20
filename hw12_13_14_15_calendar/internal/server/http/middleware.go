@@ -26,14 +26,14 @@ func (lrw *loggingResponseWriter) WriteHeader(code int) {
 }
 
 func getIP(r *http.Request) string {
-    //Get IP from the X-REAL-IP header
+    // Get IP from the X-REAL-IP header
     ip := r.Header.Get("X-REAL-IP")
     netIP := net.ParseIP(ip)
     if netIP != nil {
         return ip
     }
 
-    //Get IP from X-FORWARDED-FOR header
+    // Get IP from X-FORWARDED-FOR header
     ips := r.Header.Get("X-FORWARDED-FOR")
     splitIps := strings.Split(ips, ",")
     for _, ip := range splitIps {
@@ -43,7 +43,7 @@ func getIP(r *http.Request) string {
         }
     }
 
-    //Get IP from RemoteAddr
+    // Get IP from RemoteAddr
     ip, _, _ = net.SplitHostPort(r.RemoteAddr)
     netIP = net.ParseIP(ip)
     if netIP != nil {
@@ -57,7 +57,7 @@ func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		lrw := NewLoggingResponseWriter(w)
 		start := time.Now()
 		next.ServeHTTP(lrw, r)
-		FileLog.Println(getIP(r), fmt.Sprintf("[%v]", start.Format("02.01.2006 15:04:05")), r.Method, r.URL.Path, lrw.statusCode,
-		time.Now().Sub(start), r.UserAgent())
+		FileLog.Println(getIP(r), fmt.Sprintf("[%v]", start.Format("02.01.2006 15:04:05")), r.Method, r.URL.Path,
+         lrw.statusCode, time.Since(start), r.UserAgent())
 	})
 }

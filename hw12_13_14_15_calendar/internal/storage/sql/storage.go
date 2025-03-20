@@ -79,7 +79,7 @@ func (s *Storage) CreateUser(ctx context.Context, user storage.User) (int64, err
 func (s *Storage) UpdateUser(ctx context.Context, user storage.User) error {
 	return nil
 }
-func (s *Storage) DeleteUser(ctx context.Context, userId int64) error {
+func (s *Storage) DeleteUser(ctx context.Context, userID int64) error {
 	return nil
 }
 
@@ -91,7 +91,7 @@ func (s *Storage) CreateEvent(ctx context.Context, evt storage.Event) (int64, er
 func (s *Storage) UpdateEvent(ctx context.Context, evt storage.Event) error {
 	return nil
 }
-func (s *Storage) DeleteEvent(ctx context.Context, evtId int64) error {
+func (s *Storage) DeleteEvent(ctx context.Context, evtID int64) error {
 	return nil
 }
 func (s *Storage) ListEventsForDay(ctx context.Context, startDay time.Time) ([]storage.Event, error) {

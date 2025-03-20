@@ -8,8 +8,8 @@ import (
 	"os"
 	"time"
 
-    "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/config"
-	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/logger"
+    "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/config" //nolint:depguard
+	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/logger" //nolint:depguard
 )
 
 type Server struct { 
@@ -52,8 +52,8 @@ func NewServer(logger *logger.Logger, cfg config.Config, app Application) *Serve
 		log: *logger,
 		mux: mux,
 		fileLog: f,
-		readTimeout: time.Duration(time.Duration(cfg.Server.ReadTimeOut)*time.Second),
-		writeTimeout: time.Duration(time.Duration(cfg.Server.WriteTimeOut)*time.Second),
+		readTimeout: time.Duration(cfg.Server.ReadTimeOut)*time.Second,
+		writeTimeout: time.Duration(cfg.Server.WriteTimeOut)*time.Second,
 	}
 }
 
@@ -70,7 +70,7 @@ func (s *Server) Start(ctx context.Context) error {
 		
 	err := server.ListenAndServe()
 	if err != nil {
-		return fmt.Errorf("ListenAndServe: %w", err)
+		return fmt.Errorf("server.ListenAndServe: %w", err)
 	}
 	<-ctx.Done()
 	return nil
@@ -79,7 +79,7 @@ func (s *Server) Start(ctx context.Context) error {
 func (s *Server) Stop(ctx context.Context) error {
 	err := s.server.Shutdown(ctx)
 	if err != nil {
-		return fmt.Errorf("Shutdown: %w", err)
+		return fmt.Errorf("server.Shutdown: %w", err)
 	}
 	s.log.Info("Server is Shutdown... ")
 	return nil

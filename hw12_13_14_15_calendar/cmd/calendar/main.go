@@ -9,13 +9,13 @@ import (
 	"syscall"
 	"time"
 	
-	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/app"
-	config "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/config"
-	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/logger"
-	internalhttp "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/server/http"
+	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/app" //nolint:depguard
+	config "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/config" //nolint:depguard
+	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/logger" //nolint:depguard
+	internalhttp "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/server/http" //nolint:depguard
 
 	//memorystorage "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage/memory"
-	sqlstorage "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage/sql"
+	sqlstorage "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage/sql" //nolint:depguard
 )
 
 var configFile string
