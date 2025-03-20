@@ -3,7 +3,6 @@
 		"level": "debug",
 		"logFile": "serverApi.log"
 	},
-	"source": "mongo",
 	"db": {
 		"host": "localHost",
 		"port": 5432,
@@ -13,13 +12,6 @@
         "timeout": 60,
         "numOpenConns": 5,
         "connLifeTime": 0
-	},
-	"mongo": {
-		"host": "localHost",
-		"port": 27017,
-		"name": "calendar",
-		"user": "admin",
-		"pass": "admin"
 	},
 	"server": {
 		"port": 8080,

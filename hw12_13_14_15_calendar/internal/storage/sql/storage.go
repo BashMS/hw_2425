@@ -9,6 +9,7 @@ import (
 	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/config"
 	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/logger"
 	_ "github.com/jackc/pgx/stdlib"
+	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage"
 )
 
 type Storage struct { 
@@ -70,4 +71,35 @@ func (s *Storage) Close(ctx context.Context) error {
 	s.DB = nil
 	s.Log.Info("Close DB OK...")
 	return nil
+}
+
+func (s *Storage) CreateUser(ctx context.Context, user storage.User) (int64, error) {
+	return 1, nil
+}
+func (s *Storage) UpdateUser(ctx context.Context, user storage.User) error {
+	return nil
+}
+func (s *Storage) DeleteUser(ctx context.Context, userId int64) error {
+	return nil
+}
+
+func (s *Storage) CreateEvent(ctx context.Context, evt storage.Event) (int64, error) {
+
+	return 1, nil
+}
+
+func (s *Storage) UpdateEvent(ctx context.Context, evt storage.Event) error {
+	return nil
+}
+func (s *Storage) DeleteEvent(ctx context.Context, evtId int64) error {
+	return nil
+}
+func (s *Storage) ListEventsForDay(ctx context.Context, startDay time.Time) ([]storage.Event, error) {
+	return []storage.Event{}, nil
+}
+func (s *Storage) ListEventsForWeek(ctx context.Context, startDay time.Time) ([]storage.Event, error) {
+	return []storage.Event{}, nil
+}
+func (s *Storage) ListEventsForMonth(ctx context.Context, startDay time.Time) ([]storage.Event, error) {
+	return []storage.Event{}, nil
 }
