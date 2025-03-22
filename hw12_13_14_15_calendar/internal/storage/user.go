@@ -1,7 +1,7 @@
 package storage
 
 type User struct {
-	ID      string
+	ID      int64
 	Name    string
 	Address string
 }
