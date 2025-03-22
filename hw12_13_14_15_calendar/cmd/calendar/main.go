@@ -8,18 +8,16 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-	
-	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/app" //nolint:depguard
-	config "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/config" //nolint:depguard
-	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/logger" //nolint:depguard
-	internalhttp "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/server/http" //nolint:depguard
 
-	//memorystorage "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage/memory"
+	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/app"                      //nolint:depguard
+	config "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/config"            //nolint:depguard
+	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/logger"                   //nolint:depguard
+	internalhttp "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/server/http" //nolint:depguard
+	// memorystorage "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage/memory".
 	sqlstorage "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage/sql" //nolint:depguard
 )
 
 var configFile string
-
 
 func init() {
 	flag.StringVar(&configFile, "config", "/etc/calendar/config.txt", "Path to configuration file")
@@ -30,15 +28,15 @@ func main() {
 
 	args := flag.Args()
 
-	if len(args) >0 && args[0] == "version" {
+	if len(args) > 0 && args[0] == "version" {
 		printVersion()
 		return
 	}
-	
+
 	if len(configFile) == 0 {
 		panic("No configuration file specified")
 	}
-	
+
 	cfg := config.NewConfig(configFile)
 	logg := logger.New(cfg.Logger.Level)
 
@@ -46,14 +44,13 @@ func main() {
 		syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 	defer cancel()
 
-	
 	storage := sqlstorage.New(cfg, logg)
 	calendar := app.New(logg, *storage)
-    if err := storage.Open(ctx); err != nil {
-	   panic(fmt.Sprintf("storage.Open: %s", err.Error()))
+	if err := storage.Open(ctx); err != nil {
+		panic(fmt.Sprintf("storage.Open: %s", err.Error()))
 	}
-	defer func() {storage.Close(ctx)}()
-	
+	defer func() { storage.Close() }()
+
 	server := internalhttp.NewServer(logg, cfg, calendar)
 
 	go func() {

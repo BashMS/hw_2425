@@ -11,7 +11,8 @@
 		"pass": "postgres",
         "timeout": 60,
         "numOpenConns": 5,
-        "connLifeTime": 0
+        "connLifeTime": 0,
+		"maxIdleConns": 2
 	},
 	"server": {
 		"port": 8080,

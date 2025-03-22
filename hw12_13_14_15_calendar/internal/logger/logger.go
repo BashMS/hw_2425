@@ -25,7 +25,7 @@ type Logger struct {
 }
 
 func New(level string) *Logger {
-	var programLevel = new(slog.LevelVar)
+	programLevel := new(slog.LevelVar)
 	programLevel.Set(levelMap[level])
 	h := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: programLevel})
 	slog.SetDefault(slog.New(h))
@@ -34,18 +34,18 @@ func New(level string) *Logger {
 	}
 }
 
-func (l Logger) Info(msg string, args... any) {
-		slog.Info(msg, args...)
+func (l Logger) Info(msg string, args ...any) {
+	slog.Info(msg, args...)
 }
 
-func (l Logger) Error(msg string, args... any) {
+func (l Logger) Error(msg string, args ...any) {
 	slog.Error(msg, args...)
 }
 
-func (l Logger) Warn(msg string, args... any) {
+func (l Logger) Warn(msg string, args ...any) {
 	slog.Warn(msg, args...)
 }
 
-func (l Logger) Debug(msg string, args... any) {
+func (l Logger) Debug(msg string, args ...any) {
 	slog.Debug(msg, args...)
 }

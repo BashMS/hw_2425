@@ -16,24 +16,25 @@ type Config struct {
 }
 
 type LoggerConf struct {
-	Level string `json:"level"`
+	Level   string `json:"level"`
 	LogFile string `json:"logFile"`
 }
 
 type DBConf struct {
-	User string `json:"user"`
-	Pass string `json:"pass"`
-	Host string `json:"host"`
-	Port int    `json:"port"`
-	Name string `json:"name"`
-	Timeout int `json:"timeout"`
-	NumOpenConns int `json:"numOpenConns"`
-	ConnLifeTime int `json:"connLifeTime"`
+	User         string `json:"user"`
+	Pass         string `json:"pass"`
+	Host         string `json:"host"`
+	Port         int    `json:"port"`
+	Name         string `json:"name"`
+	Timeout      int    `json:"timeout"`
+	NumOpenConns int    `json:"numOpenConns"`
+	ConnLifeTime int    `json:"connLifeTime"`
+	MaxIdleConns int    `json:"maxIdleConns"`
 }
 
 type ServConf struct {
-	Port int `json:"port"`
-	ReadTimeOut int `json:"readTimeOut"`
+	Port         int `json:"port"`
+	ReadTimeOut  int `json:"readTimeOut"`
 	WriteTimeOut int `json:"writeTimeOut"`
 }
 
@@ -44,7 +45,7 @@ func NewConfig(cfgPath string) Config {
 		panic(fmt.Sprintf("error read config file: %s", err.Error()))
 	}
 
-    var cfg Config
+	var cfg Config
 	err = json.Unmarshal(data, &cfg)
 	if err != nil {
 		panic(fmt.Sprintf("error get configs: %s", err.Error()))
