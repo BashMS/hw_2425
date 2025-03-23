@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/config"  //nolint:depguard
 	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/logger"  //nolint:depguard
 	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage" //nolint:depguard
 )
@@ -19,12 +20,22 @@ type Storage struct {
 }
 
 // New.
-func New(logg *logger.Logger) *Storage {
+func New(_ config.Config, logg *logger.Logger) *Storage {
 	return &Storage{
 		Events: make(map[int64]storage.Event),
 		Users:  make(map[int64]storage.User),
 		Log:    *logg,
 	}
+}
+
+func (s *Storage) Open(_ context.Context) error {
+	s.Log.Info("Opening Memory storage...")
+	return nil
+}
+
+func (s *Storage) Close(_ context.Context) error {
+	s.Log.Info("Close Memory storage...")
+	return nil
 }
 
 func (s *Storage) checkUser(userAddr string) bool {
@@ -45,7 +56,7 @@ func (s *Storage) checkEvent(evt storage.Event) bool {
 	return false
 }
 
-func (s *Storage) CreateUser(ctx context.Context, user storage.User) (int64, error) { //nolint:revive
+func (s *Storage) CreateUser(_ context.Context, user storage.User) (int64, error) {
 	if s.checkUser(strings.ToLower(user.Address)) {
 		return 0, fmt.Errorf("CreateUser: %w", storage.ErrUserExists)
 	}
@@ -59,7 +70,7 @@ func (s *Storage) CreateUser(ctx context.Context, user storage.User) (int64, err
 	return id, nil
 }
 
-func (s *Storage) UpdateUser(ctx context.Context, user storage.User) error { //nolint:revive
+func (s *Storage) UpdateUser(_ context.Context, user storage.User) error {
 	if _, ok := s.Users[user.ID]; !ok {
 		return fmt.Errorf("UpdateUser: %w", storage.ErrUserNotExists)
 	}
@@ -71,7 +82,7 @@ func (s *Storage) UpdateUser(ctx context.Context, user storage.User) error { //n
 	return nil
 }
 
-func (s *Storage) DeleteUser(ctx context.Context, userID int64) error { //nolint:revive
+func (s *Storage) DeleteUser(_ context.Context, userID int64) error {
 	if _, ok := s.Users[userID]; !ok {
 		return fmt.Errorf("DeleteUser: %w", storage.ErrUserNotExists)
 	}
@@ -83,7 +94,7 @@ func (s *Storage) DeleteUser(ctx context.Context, userID int64) error { //nolint
 	return nil
 }
 
-func (s *Storage) CreateEvent(ctx context.Context, evt storage.Event) (int64, error) { //nolint:revive
+func (s *Storage) CreateEvent(_ context.Context, evt storage.Event) (int64, error) {
 	if s.checkEvent(evt) {
 		return 0, fmt.Errorf("CreateEvent: %w", storage.ErrDateBusy)
 	}
@@ -97,7 +108,7 @@ func (s *Storage) CreateEvent(ctx context.Context, evt storage.Event) (int64, er
 	return id, nil
 }
 
-func (s *Storage) UpdateEvent(ctx context.Context, evt storage.Event) error { //nolint:revive
+func (s *Storage) UpdateEvent(_ context.Context, evt storage.Event) error {
 	if _, ok := s.Events[evt.ID]; !ok {
 		return fmt.Errorf("UpdateEvent: %w", storage.ErrEventNotExists)
 	}
@@ -112,7 +123,7 @@ func (s *Storage) UpdateEvent(ctx context.Context, evt storage.Event) error { //
 	return nil
 }
 
-func (s *Storage) DeleteEvent(ctx context.Context, evtID int64) error { //nolint:revive
+func (s *Storage) DeleteEvent(_ context.Context, evtID int64) error {
 	if _, ok := s.Events[evtID]; !ok {
 		return fmt.Errorf("DeleteEvent: %w", storage.ErrEventNotExists)
 	}
@@ -124,17 +135,17 @@ func (s *Storage) DeleteEvent(ctx context.Context, evtID int64) error { //nolint
 	return nil
 }
 
-func (s *Storage) ListEventsForDay(ctx context.Context, startDay time.Time) ([]storage.Event, error) { //nolint:revive
+func (s *Storage) ListEventsForDay(_ context.Context, startDay time.Time) ([]storage.Event, error) { //nolint:revive
 	// TODO
 	return []storage.Event{}, nil
 }
 
-func (s *Storage) ListEventsForWeek(ctx context.Context, startDay time.Time) ([]storage.Event, error) { //nolint:revive
+func (s *Storage) ListEventsForWeek(_ context.Context, startDay time.Time) ([]storage.Event, error) { //nolint:revive
 	// TODO
 	return []storage.Event{}, nil
 }
 
-func (s *Storage) ListEventsForMonth(ctx context.Context, startDay time.Time) ([]storage.Event, error) { //nolint:revive
+func (s *Storage) ListEventsForMonth(_ context.Context, startDay time.Time) ([]storage.Event, error) { //nolint:revive
 	// TODO
 	return []storage.Event{}, nil
 }

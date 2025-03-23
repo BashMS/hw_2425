@@ -13,6 +13,7 @@ type Config struct {
 	Logger LoggerConf `json:"logger"`
 	DB     DBConf     `json:"db"`
 	Server ServConf   `json:"server"`
+	Source string     `json:"source"`
 }
 
 type LoggerConf struct {

@@ -3,6 +3,7 @@
 		"level": "debug",
 		"logFile": "serverApi.log"
 	},
+	"source": "memory",
 	"db": {
 		"host": "localHost",
 		"port": 5432,

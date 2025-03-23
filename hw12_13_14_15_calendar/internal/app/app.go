@@ -4,9 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/logger"                 //nolint:depguard
-	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage"                //nolint:depguard
-	sqlstorage "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage/sql" //nolint:depguard
+	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/logger"  //nolint:depguard
+	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage" //nolint:depguard
 )
 
 type App struct {
@@ -15,6 +14,9 @@ type App struct {
 }
 
 type Storage interface {
+	Open(ctx context.Context) error
+	Close(ctx context.Context) error
+
 	CreateUser(ctx context.Context, user storage.User) (int64, error)
 	UpdateUser(ctx context.Context, user storage.User) error
 	DeleteUser(ctx context.Context, userID int64) error
@@ -27,11 +29,19 @@ type Storage interface {
 	ListEventsForMonth(ctx context.Context, startDay time.Time) ([]storage.Event, error)
 }
 
-func New(logger *logger.Logger, storage sqlstorage.Storage) *App {
+func New(logger *logger.Logger, storage Storage) *App {
 	return &App{
 		logg: *logger,
-		stor: &storage,
+		stor: storage,
 	}
+}
+
+func (a *App) Open(ctx context.Context) error {
+	return a.stor.Open(ctx)
+}
+
+func (a *App) Close(ctx context.Context) error {
+	return a.stor.Close(ctx)
 }
 
 func (a *App) CreateEvent(ctx context.Context, evt storage.Event) (int64, error) {

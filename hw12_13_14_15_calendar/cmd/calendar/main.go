@@ -9,12 +9,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/app"                      //nolint:depguard
-	config "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/config"            //nolint:depguard
-	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/logger"                   //nolint:depguard
-	internalhttp "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/server/http" //nolint:depguard
-	// memorystorage "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage/memory".
-	sqlstorage "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage/sql" //nolint:depguard
+	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/app"                          //nolint:depguard
+	config "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/config"                //nolint:depguard
+	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/logger"                       //nolint:depguard
+	internalhttp "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/server/http"     //nolint:depguard
+	memorystorage "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage/memory" //nolint:depguard
+	sqlstorage "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage/sql"       //nolint:depguard
 )
 
 var configFile string
@@ -37,6 +37,7 @@ func main() {
 		panic("No configuration file specified")
 	}
 
+	// получим конфигурацию приложения
 	cfg := config.NewConfig(configFile)
 	logg := logger.New(cfg.Logger.Level)
 
@@ -44,12 +45,22 @@ func main() {
 		syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 	defer cancel()
 
-	storage := sqlstorage.New(cfg, logg)
-	calendar := app.New(logg, *storage)
+	// инициализируем хранилище
+	var storage app.Storage
+	switch cfg.Source {
+	case "postgres":
+		storage = sqlstorage.New(cfg, logg)
+	case "memory":
+		storage = memorystorage.New(cfg, logg)
+	default:
+		panic("No storage configuration source specified")
+	}
+
+	calendar := app.New(logg, storage)
 	if err := storage.Open(ctx); err != nil {
 		panic(fmt.Sprintf("storage.Open: %s", err.Error()))
 	}
-	defer func() { storage.Close() }()
+	defer func() { storage.Close(ctx) }()
 
 	server := internalhttp.NewServer(logg, cfg, calendar)
 

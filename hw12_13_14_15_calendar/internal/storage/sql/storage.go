@@ -59,7 +59,7 @@ func (s *Storage) Open(ctx context.Context) error {
 	return nil
 }
 
-func (s *Storage) Close() error {
+func (s *Storage) Close(_ context.Context) error {
 	s.Log.Info("Closing DB...")
 	if s.DB == nil {
 		return nil

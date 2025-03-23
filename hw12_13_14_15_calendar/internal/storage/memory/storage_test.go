@@ -5,12 +5,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/config"  //nolint:depguard
 	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/logger"  //nolint:depguard
 	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage" //nolint:depguard
 )
 
 func TestStorage_CreateUser(t *testing.T) {
-	s := New(logger.New("debug"))
+	s := New(config.Config{Source: "memory"}, logger.New("debug"))
 	id, err := s.CreateUser(context.Background(), storage.User{
 		ID:      0,
 		Name:    "test",
@@ -37,7 +38,7 @@ func TestStorage_CreateUser(t *testing.T) {
 }
 
 func TestStorage_UpdateUser(t *testing.T) {
-	s := New(logger.New("debug"))
+	s := New(config.Config{Source: "memory"}, logger.New("debug"))
 	s.Users[int64(1)] = storage.User{
 		ID:      int64(1),
 		Name:    "test",
@@ -67,7 +68,7 @@ func TestStorage_UpdateUser(t *testing.T) {
 }
 
 func TestStorage_DeleteUser(t *testing.T) {
-	s := New(logger.New("debug"))
+	s := New(config.Config{Source: "memory"}, logger.New("debug"))
 	s.Users[int64(1)] = storage.User{
 		ID:      int64(1),
 		Name:    "test",
@@ -89,7 +90,7 @@ func TestStorage_DeleteUser(t *testing.T) {
 }
 
 func TestStorage_CreateEvent(t *testing.T) {
-	s := New(logger.New("debug"))
+	s := New(config.Config{Source: "memory"}, logger.New("debug"))
 	startDate := time.Now()
 	id, err := s.CreateEvent(context.Background(), storage.Event{
 		ID:        int64(0),
@@ -119,7 +120,7 @@ func TestStorage_CreateEvent(t *testing.T) {
 }
 
 func TestStorage_UpdateEvent(t *testing.T) {
-	s := New(logger.New("debug"))
+	s := New(config.Config{Source: "memory"}, logger.New("debug"))
 	startDate := time.Now()
 	s.Events[int64(1)] = storage.Event{
 		ID:        int64(1),
@@ -169,7 +170,7 @@ func TestStorage_UpdateEvent(t *testing.T) {
 }
 
 func TestStorage_DeleteEvent(t *testing.T) {
-	s := New(logger.New("debug"))
+	s := New(config.Config{Source: "memory"}, logger.New("debug"))
 	s.Events[int64(1)] = storage.Event{
 		ID:     int64(1),
 		Name:   "test",
