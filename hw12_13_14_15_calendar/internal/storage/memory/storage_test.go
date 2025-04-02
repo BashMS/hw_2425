@@ -190,3 +190,129 @@ func TestStorage_DeleteEvent(t *testing.T) {
 		t.Error("Ожидалась ошибка удаления события")
 	}
 }
+
+func TestStorage_ListEventsForDay(t *testing.T) {
+	s := New(config.Config{Source: "memory"}, logger.New("debug"))
+	startDate := time.Now()
+	id, err := s.CreateEvent(context.Background(), storage.Event{
+		ID:        int64(0),
+		Name:      "test",
+		StartDate: startDate,
+		UserID:    int64(1),
+	})
+	if err != nil {
+		t.Errorf("Storage.CreateEvent() error = %v", err)
+	}
+	if id != 1 {
+		t.Errorf("Получили id %v; want 1", id)
+	}
+
+	_, err = s.CreateEvent(context.Background(), storage.Event{
+		ID:        0,
+		Name:      "test 2",
+		StartDate: startDate.Add(24 * time.Hour),
+		UserID:    int64(1),
+	})
+	if err != nil {
+		t.Errorf("Storage.CreateEvent() error = %v", err)
+	}
+
+	list, err := s.ListEventsForDay(
+		context.Background(),
+		time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, startDate.Location()),
+	)
+	if err != nil {
+		t.Errorf("Storage.ListEventsForDay() error = %v", err)
+	}
+
+	if len(list) != 1 {
+		t.Errorf("Ожидалась одно событие, получили: %v", len(list))
+	}
+	if list[0].ID != 1 {
+		t.Error("Ожидалась одно событие с id = 1")
+	}
+}
+
+func TestStorage_ListEventsForWeek(t *testing.T) {
+	s := New(config.Config{Source: "memory"}, logger.New("debug"))
+	startDate := time.Now()
+	id, err := s.CreateEvent(context.Background(), storage.Event{
+		ID:        int64(0),
+		Name:      "test",
+		StartDate: startDate,
+		UserID:    int64(1),
+	})
+	if err != nil {
+		t.Errorf("Storage.CreateEvent() error = %v", err)
+	}
+	if id != 1 {
+		t.Errorf("Получили id %v; want 1", id)
+	}
+
+	_, err = s.CreateEvent(context.Background(), storage.Event{
+		ID:        0,
+		Name:      "test 2",
+		StartDate: startDate.Add(7 * 24 * time.Hour),
+		UserID:    int64(1),
+	})
+	if err != nil {
+		t.Errorf("Storage.CreateEvent() error = %v", err)
+	}
+
+	list, err := s.ListEventsForWeek(
+		context.Background(),
+		time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, startDate.Location()),
+	)
+	if err != nil {
+		t.Errorf("Storage.ListEventsForWeek() error = %v", err)
+	}
+
+	if len(list) != 1 {
+		t.Errorf("Ожидалась одно событие, получили: %v", len(list))
+	}
+	if list[0].ID != 1 {
+		t.Error("Ожидалась одно событие с id = 1")
+	}
+}
+
+func TestStorage_ListEventsForMonth(t *testing.T) {
+	s := New(config.Config{Source: "memory"}, logger.New("debug"))
+	startDate := time.Now()
+	id, err := s.CreateEvent(context.Background(), storage.Event{
+		ID:        int64(0),
+		Name:      "test",
+		StartDate: startDate,
+		UserID:    int64(1),
+	})
+	if err != nil {
+		t.Errorf("Storage.CreateEvent() error = %v", err)
+	}
+	if id != 1 {
+		t.Errorf("Получили id %v; want 1", id)
+	}
+
+	_, err = s.CreateEvent(context.Background(), storage.Event{
+		ID:        0,
+		Name:      "test 2",
+		StartDate: startDate.Add(31 * 24 * time.Hour),
+		UserID:    int64(1),
+	})
+	if err != nil {
+		t.Errorf("Storage.CreateEvent() error = %v", err)
+	}
+
+	list, err := s.ListEventsForMonth(
+		context.Background(),
+		time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, startDate.Location()),
+	)
+	if err != nil {
+		t.Errorf("Storage.ListEventsForMonth() error = %v", err)
+	}
+
+	if len(list) != 1 {
+		t.Errorf("Ожидалась одно событие, получили: %v", len(list))
+	}
+	if list[0].ID != 1 {
+		t.Error("Ожидалась одно событие с id = 1")
+	}
+}

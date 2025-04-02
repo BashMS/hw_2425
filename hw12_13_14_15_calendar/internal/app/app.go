@@ -59,19 +59,27 @@ func (a *App) DeleteEvent(ctx context.Context, evtID int64) error {
 	return a.stor.DeleteEvent(ctx, evtID)
 }
 
+func getStartDay(in *time.Time) time.Time {
+	out := time.Date(in.Year(), in.Month(), in.Day(), 0, 0, 0, 0, in.Location())
+
+	return out
+}
+
 func (a *App) ListEventsForDay(ctx context.Context, startDay time.Time) ([]storage.Event, error) {
-	// TODO
-	return a.stor.ListEventsForDay(ctx, startDay)
+	inDate := getStartDay(&startDay)
+
+	return a.stor.ListEventsForDay(ctx, inDate)
 }
 
 func (a *App) ListEventsForWeek(ctx context.Context, startDay time.Time) ([]storage.Event, error) {
-	// TODO
-	return a.stor.ListEventsForWeek(ctx, startDay)
+	inDate := getStartDay(&startDay)
+
+	return a.stor.ListEventsForWeek(ctx, inDate)
 }
 
 func (a *App) ListEventsForMonth(ctx context.Context, startDay time.Time) ([]storage.Event, error) {
-	// TODO
-	return a.stor.ListEventsForMonth(ctx, startDay)
+	inDate := getStartDay(&startDay)
+	return a.stor.ListEventsForMonth(ctx, inDate)
 }
 
 func (a *App) CreateUser(ctx context.Context, user storage.User) (int64, error) {

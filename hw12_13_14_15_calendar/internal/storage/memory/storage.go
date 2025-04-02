@@ -135,17 +135,50 @@ func (s *Storage) DeleteEvent(_ context.Context, evtID int64) error {
 	return nil
 }
 
-func (s *Storage) ListEventsForDay(_ context.Context, startDay time.Time) ([]storage.Event, error) { //nolint:revive
-	// TODO
-	return []storage.Event{}, nil
+// ListEventsForDay возвращает события за указанный день.
+func (s *Storage) ListEventsForDay(_ context.Context, startDay time.Time) ([]storage.Event, error) {
+	var result []storage.Event
+	endDay := startDay.Add(24 * time.Hour)
+
+	s.mu.Lock()
+	for _, evt := range s.Events {
+		if (evt.StartDate.Equal(startDay) || evt.StartDate.After(startDay)) && evt.StartDate.Before(endDay) {
+			result = append(result, evt)
+		}
+	}
+	s.mu.Unlock()
+
+	return result, nil
 }
 
-func (s *Storage) ListEventsForWeek(_ context.Context, startDay time.Time) ([]storage.Event, error) { //nolint:revive
-	// TODO
-	return []storage.Event{}, nil
+// ListEventsForWeek возвращает события за неделю с указанной даты.
+func (s *Storage) ListEventsForWeek(_ context.Context, startDay time.Time) ([]storage.Event, error) {
+	var result []storage.Event
+	endDay := startDay.Add(7 * 24 * time.Hour)
+
+	s.mu.Lock()
+	for _, evt := range s.Events {
+		if (evt.StartDate.Equal(startDay) || evt.StartDate.After(startDay)) && evt.StartDate.Before(endDay) {
+			result = append(result, evt)
+		}
+	}
+	s.mu.Unlock()
+
+	return result, nil
 }
 
-func (s *Storage) ListEventsForMonth(_ context.Context, startDay time.Time) ([]storage.Event, error) { //nolint:revive
-	// TODO
-	return []storage.Event{}, nil
+// ListEventsForMonth возвращает события за месяц с указанной даты.
+func (s *Storage) ListEventsForMonth(_ context.Context, startDay time.Time) ([]storage.Event, error) {
+	var result []storage.Event
+	endDay := startDay.Add(31 * 24 * time.Hour)
+
+	s.mu.Lock()
+	for _, evt := range s.Events {
+		if (evt.StartDate.Equal(startDay) || evt.StartDate.After(startDay)) && evt.StartDate.Before(endDay) {
+			result = append(result, evt)
+		}
+	}
+	s.mu.Unlock()
+
+	return result, nil
 }
