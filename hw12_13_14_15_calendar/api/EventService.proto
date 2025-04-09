@@ -2,6 +2,51 @@ syntax = "proto3";
 
 package event;
 
-message Event {
-    // TODO
+option go_package = "bash.calendar.v1;calendarv1";
+
+message UserRequest {
+    int64  id = 1;
+    string name = 2;
+    string address = 3;
+}
+
+message UserResponse {
+    int64  id = 1;
+    string error = 2;
+}
+
+message EventRequest {
+    int64     id = 1;
+	string    name = 2;
+	string    startDate = 3;
+	string    endDate = 4;
+	int64     userId = 5;
+	string    description = 6;
+	int       remindFor = 7;
+}
+
+message EventResponse {
+    int64  id = 1;
+    string error = 2;
+}
+
+message ListRequest {
+    string startDate = 1;
+}
+
+message ListResponse {
+    repeated EventRequest events = 1;
+    string   error = 2;
+}
+
+service calendar {
+  rpc CreateUser(UserRequest) returns (UserResponse);
+  rpc UpdateUser(UserRequest) returns (UserResponse);
+  rpc DeleteUser(UserRequest) returns (UserResponse);
+  rpc CreateEvent(EventRequest) returns (EventResponse);
+  rpc UpdateEvent(EventRequest) returns (EventResponse);
+  rpc DeleteEvent(EventRequest) returns (EventResponse);
+  rpc ListEventsForDay(ListRequest) returns (ListResponse);
+  rpc ListEventsForWeek(ListRequest) returns (ListResponse);
+  rpc ListEventsForMonth(ListRequest) returns (ListResponse);
 }
