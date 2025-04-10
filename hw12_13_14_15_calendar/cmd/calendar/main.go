@@ -62,7 +62,7 @@ func main() {
 	}
 	defer func() { storage.Close(ctx) }()
 
-	server := internalhttp.NewServer(logg, cfg, calendar)
+	server := internalhttp.NewServer(logg, cfg, *calendar)
 
 	go func() {
 		<-ctx.Done()
