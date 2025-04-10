@@ -3,42 +3,66 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/fixme_my_friend/hw12_13_14_15_calendar/internal/app"
-	"github.com/fixme_my_friend/hw12_13_14_15_calendar/internal/logger"
-	internalhttp "github.com/fixme_my_friend/hw12_13_14_15_calendar/internal/server/http"
-	memorystorage "github.com/fixme_my_friend/hw12_13_14_15_calendar/internal/storage/memory"
+	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/app"                          //nolint:depguard
+	config "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/config"                //nolint:depguard
+	"github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/logger"                       //nolint:depguard
+	internalhttp "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/server/http"     //nolint:depguard
+	memorystorage "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage/memory" //nolint:depguard
+	sqlstorage "github.com/BashMS/hw_2425/hw12_13_14_15_calendar/internal/storage/sql"       //nolint:depguard
 )
 
 var configFile string
 
 func init() {
-	flag.StringVar(&configFile, "config", "/etc/calendar/config.toml", "Path to configuration file")
+	flag.StringVar(&configFile, "config", "/etc/calendar/config.txt", "Path to configuration file")
 }
 
 func main() {
 	flag.Parse()
 
-	if flag.Arg(0) == "version" {
+	args := flag.Args()
+
+	if len(args) > 0 && args[0] == "version" {
 		printVersion()
 		return
 	}
 
-	config := NewConfig()
-	logg := logger.New(config.Logger.Level)
+	if len(configFile) == 0 {
+		panic("No configuration file specified")
+	}
 
-	storage := memorystorage.New()
-	calendar := app.New(logg, storage)
-
-	server := internalhttp.NewServer(logg, calendar)
+	// получим конфигурацию приложения
+	cfg := config.NewConfig(configFile)
+	logg := logger.New(cfg.Logger.Level)
 
 	ctx, cancel := signal.NotifyContext(context.Background(),
 		syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 	defer cancel()
+
+	// инициализируем хранилище
+	var storage app.Storage
+	switch cfg.Source {
+	case "postgres":
+		storage = sqlstorage.New(cfg, logg)
+	case "memory":
+		storage = memorystorage.New(cfg, logg)
+	default:
+		panic("No storage configuration source specified")
+	}
+
+	calendar := app.New(logg, storage)
+	if err := storage.Open(ctx); err != nil {
+		panic(fmt.Sprintf("storage.Open: %s", err.Error()))
+	}
+	defer func() { storage.Close(ctx) }()
+
+	server := internalhttp.NewServer(logg, cfg, calendar)
 
 	go func() {
 		<-ctx.Done()
