@@ -13,9 +13,9 @@ func ExecutePipeline(in In, done In, stages ...Stage) Out {
 
 	for i, stage := range stages {
 		if i == 0 {
-			result = stage(in)
+			result = prepareResult(stage(in), done)
 		} else {
-			result = stage(result)
+			result = prepareResult(stage(result), done)
 		}
 	}
 
