@@ -13,16 +13,16 @@ func ExecutePipeline(in In, done In, stages ...Stage) Out {
 
 	for i, stage := range stages {
 		if i == 0 {
-			result = startStage(in, done, stage)
+			result = stage(in)
 		} else {
-			result = startStage(result, done, stage)
+			result = stage(result)
 		}
 	}
 
-	return result
+	return prepareResult(result, done)
 }
 
-func startStage(in In, done In, stage Stage) Out {
+func prepareResult(in In, done In) Out {
 	result := make(Bi)
 
 	go func() {
@@ -46,5 +46,5 @@ func startStage(in In, done In, stage Stage) Out {
 		}
 	}()
 
-	return stage(result)
+	return result
 }
